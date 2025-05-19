@@ -53,9 +53,6 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         .setMaxUpdateDelayMillis(20000L)
         .build()
 
-    // Get application context from AndroidViewModel
-    private val appCtx = getApplication<Application>().applicationContext
-
     fun initialize() {
         if (::fusedLocationClient.isInitialized) return // Avoid re-initialization
 
@@ -66,7 +63,7 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
 
     fun checkPermissionAndFetchLocation() {
         Log.d("LocationViewModel", "Checking permission and fetching location.")
-        if (ContextCompat.checkSelfPermission(appCtx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getApplication<Application>().applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             _uiState.value = _uiState.value.copy(permissionGranted = true, permissionRequested = true, isLoading = true, displayValue = "Locating...")
             fetchLocation()
         } else {
@@ -124,7 +121,7 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
                     }
                     // Request location updates on the main thread's looper
                     withContext(Dispatchers.Main.immediate) {
-                        if (ContextCompat.checkSelfPermission(appCtx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        if (ContextCompat.checkSelfPermission(getApplication<Application>().applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback!!, Looper.getMainLooper())
                             Log.d("LocationViewModel", "Requested location updates.")
                         } else {
