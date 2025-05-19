@@ -223,7 +223,12 @@ fun WearApp(
                         style = typography.display1
                     )
                 } else if (postalCodeState.value != null) {
-                    Text(text = postalCodeState.value!!, style = typography.display1)
+                    Text(
+                        text = postalCodeState.value!!,
+                        style = typography.display1.copy(
+                            fontSize = 96.sp
+                        )
+                    )
                 } else if (locationState.value != null) {
                     Text(text = "Locating...", style = typography.body1)
                 } else {
