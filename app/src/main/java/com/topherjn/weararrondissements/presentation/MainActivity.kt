@@ -77,6 +77,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing\n      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and\n      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}.")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -109,9 +110,11 @@ class MainActivity : ComponentActivity() {
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
+            Log.d("WearLocation", "onLocationResult called")
             locationResult.lastLocation?.let { location ->
                 _locationFlow.value = Pair(location.latitude, location.longitude)
-                fusedLocationClient.removeLocationUpdates(this)
+                Log.d("WearLocation", "Wear OS Current Location: Lat=${location.latitude}, Lon=${location.longitude}")
+                fusedLocationClient.removeLocationUpdates(this) // Keep this for now to avoid continuous updates in testing
             }
         }
     }
@@ -188,9 +191,8 @@ class MainActivity : ComponentActivity() {
 fun WearApp(
     locationState: State<Pair<Double?, Double?>?>,
     postalCodeState: androidx.compose.runtime.MutableState<String?>,
-    onLocationChanged: (Double, Double) -> Unit // Add this parameter
+    onLocationChanged: (Double, Double) -> Unit // Ensure this is still in your WearApp signature
 ) {
-    Log.d("WearApp", "WearApp Composable Recomposed: Postal Code = ${postalCodeState.value}")
     val typography = androidx.wear.compose.material.MaterialTheme.typography
     MaterialTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
@@ -202,10 +204,11 @@ fun WearApp(
             ) {
                 TimeText()
                 val arrondissement = remember(postalCodeState.value) {
-                    postalCodeState.value?.takeIf { it.startsWith("75") }?.takeLast(2)?.toIntOrNull()
-
+                    postalCodeState.value?.takeIf { it.startsWith("75") == true &&
+                            it.length >= 5 }?.takeLast(2)?.toIntOrNull()
                 }
 
+                // Trigger geocoding whenever the location changes
                 LaunchedEffect(locationState.value) {
                     locationState.value?.let {
                         if (it.first != null && it.second != null) {
@@ -217,15 +220,14 @@ fun WearApp(
                 if (arrondissement != null) {
                     Text(
                         text = "$arrondissement",
-                        style = typography.display1
-                    )
-                } else if (postalCodeState.value != null) {
-                    Text(
-                        text = postalCodeState.value!!,
                         style = typography.display1.copy(
                             fontSize = 96.sp
                         )
                     )
+                } else if (postalCodeState.value != null) {
+                    Text(text = postalCodeState.value!!, style = typography.display1.copy(
+                        fontSize = 96.sp
+                    ))
                 } else if (locationState.value != null) {
                     Text(text = "Locating...", style = typography.body1)
                 } else {
