@@ -156,7 +156,7 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
                 val address = addresses[0]
                 val postalCode = address.postalCode
                 Log.d("LocationViewModel", "Reverse Geocoded Postal Code: $postalCode")
-
+                //TODO: use geofencing to restrict to Paris, France
                 if (postalCode?.startsWith("75") == true && postalCode.length >= 2) {
                     // Paris postal codes like 75001, 75016. The last two digits are the arrondissement.
                     val arrondissementString = postalCode.takeLast(2)
