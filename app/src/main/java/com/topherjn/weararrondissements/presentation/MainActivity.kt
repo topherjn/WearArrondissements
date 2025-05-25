@@ -164,6 +164,14 @@ fun WearAppContent(uiState: UiState, onRetry: () -> Unit) {
             // Check for non-empty displayValue and specific subTexts, and ensure no error and not loading
             uiState.displayValue.isNotEmpty() &&
                     ((uiState.subText == "Arrondissement") || (uiState.subText == "Postal Code")) && !uiState.isLoading -> {
+                uiState.subText?.let {
+                    Text(
+                        text = it,
+                        style = typography.caption1,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
                 Text(
                     text = uiState.displayValue,
                     style = typography.display1.copy(
@@ -175,13 +183,6 @@ fun WearAppContent(uiState: UiState, onRetry: () -> Unit) {
                     ),
                     textAlign = TextAlign.Center
                 )
-                uiState.subText?.let {
-                    Text(
-                        text = it,
-                        style = typography.caption1,
-                        textAlign = TextAlign.Center
-                    )
-                }
             }
 
             // 5. Default/Fallback State (e.g., "Waiting...", "Not found" without error, or other neutral messages)
