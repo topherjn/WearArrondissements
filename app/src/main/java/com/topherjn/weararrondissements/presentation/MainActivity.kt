@@ -163,14 +163,13 @@ fun WearAppContent(uiState: UiState, onRetry: () -> Unit) {
             // 4. Successful Data Display (Arrondissement or Postal Code)
             // Check for non-empty displayValue and specific subTexts, and ensure no error and not loading
             uiState.displayValue.isNotEmpty() &&
-                    (uiState.subText == "Arrondissement" || uiState.subText == "Postal Code") &&
-                    uiState.errorMessage == null && !uiState.isLoading -> {
+                    ((uiState.subText == "Arrondissement") || (uiState.subText == "Postal Code")) && !uiState.isLoading -> {
                 Text(
                     text = uiState.displayValue,
                     style = typography.display1.copy(
                         fontSize = when {
                             // Heuristic: if it's likely a postal code (longer) or a multi-digit number that's not a typical arrondissement
-                            uiState.displayValue.length > 2 || (uiState.subText == "Postal Code" && uiState.displayValue.length > 3) -> 66.sp
+                            uiState.displayValue.length > 2 -> 66.sp
                             else -> 96.sp // For typical 1 or 2 digit arrondissements
                         }
                     ),
