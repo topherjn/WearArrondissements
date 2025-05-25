@@ -34,6 +34,7 @@ import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.*
 
 // In MainActivity.kt
@@ -74,8 +75,8 @@ fun WearAppRoot(viewModel: LocationViewModel) {
     }
 
     MaterialTheme {
-        Scaffold( /* ... */ ) {
-            Box( /* ... */ ) {
+        Scaffold {
+            Box {
                 WearAppContent(
                     uiState = uiState,
                     onRetry = {
@@ -164,13 +165,11 @@ fun WearAppContent(uiState: UiState, onRetry: () -> Unit) {
             // Check for non-empty displayValue and specific subTexts, and ensure no error and not loading
             uiState.displayValue.isNotEmpty() &&
                     ((uiState.subText == "Arrondissement") || (uiState.subText == "Postal Code")) && !uiState.isLoading -> {
-                uiState.subText?.let {
-                    Text(
-                        text = it,
-                        style = typography.caption1,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                Text(
+                    text = uiState.subText,
+                    style = typography.caption1,
+                    textAlign = TextAlign.Center
+                )
 
                 Text(
                     text = uiState.displayValue,
@@ -188,7 +187,7 @@ fun WearAppContent(uiState: UiState, onRetry: () -> Unit) {
             // 5. Default/Fallback State (e.g., "Waiting...", "Not found" without error, or other neutral messages)
             else -> {
                 Icon(
-                    imageVector = Icons.Filled.HelpOutline, // Generic icon
+                    imageVector = Icons.AutoMirrored.Filled.HelpOutline, // Generic icon
                     contentDescription = "Status",
                     modifier = Modifier.size(48.dp)
                 )
