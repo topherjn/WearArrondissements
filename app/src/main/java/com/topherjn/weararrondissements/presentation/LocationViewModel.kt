@@ -176,7 +176,6 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
                         displayValue = postalCode ?: "N/A",
                         subText = if (postalCode != null) "Postal Code" else null,
                         isLoading = false,
-                        errorMessage = if (postalCode == null) "No postal code found." else "Not a Paris, FR postal code."
                     )
                     Log.d("LocationViewModel", "Not a Paris postal code or no postal code found: $postalCode")
                 }
