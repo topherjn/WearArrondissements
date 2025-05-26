@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await // Ensure this import for .await()
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Locale
@@ -100,14 +99,8 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val lastLocation = fusedLocationClient.lastLocation.await()
-                if (lastLocation != null) {
-                    Log.d("LocationViewModel", "Last known location: Lat=${lastLocation.latitude}, Lon=${lastLocation.longitude}")
-                    processGeocoding(lastLocation.latitude, lastLocation.longitude)
-                    // For this app, one good location fix is often enough.
-                    // If you wanted to ensure it's very recent, you might still request a new one.
-                } else {
-                    Log.d("LocationViewModel", "Last known location is null. Requesting current location.")
+
+
                     locationCallback = object : LocationCallback() {
                         override fun onLocationResult(locationResult: LocationResult) {
                             locationResult.lastLocation?.let { location ->
@@ -129,7 +122,7 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
                             _uiState.value = _uiState.value.copy(isLoading = false, displayValue = "Permission lost", errorMessage = "Permission was lost before update request.")
                         }
                     }
-                }
+
             } catch (e: SecurityException) {
                 Log.e("LocationViewModel", "SecurityException while getting location: ${e.message}")
                 _uiState.value = _uiState.value.copy(isLoading = false, displayValue = "Permission error", errorMessage = "Security error fetching location.")
